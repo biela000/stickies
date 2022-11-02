@@ -1,0 +1,24 @@
+$bg-color: #d8d9cf;
+$bg-color-light: #ededed;
+$primary-color: #e26868;
+$secondary-color: #ff8787;
+$font-stack: "Source Sans Pro", sans-serif;
+$font-size: 14px;
+$transition-time: 0.5s;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: $font-stack;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  background-color: $bg-color;
+  font-size: $font-size;
+}

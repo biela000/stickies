@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "outDir": "./dist/",
+    "rootDir": "./src/ts",
+    "module": "es6",
+    "allowJs": true,
+    "noImplicitAny": true,
+    "moduleResolution": "Node"
+  },
+  "include": ["./src/ts/**/*"],
+  "watchOptions": {
+    "watchDirectory": "usefsevents"
+  }
+}
