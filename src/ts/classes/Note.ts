@@ -41,14 +41,8 @@ class Note {
   }
 
   private textChangeHandler(event: Event) {
-    const { name, value } = event.target as HTMLTextAreaElement;
-    if (name === "content") {
-      this._content = value;
-    }
-  }
-
-  private removeNote() {
-    this.HTMLNote.container.parentNode.removeChild(this.HTMLNote.container);
+    this._content = (event.target as HTMLDivElement).innerText;
+    console.log(this._content);
   }
 
   private dragNote = (event: MouseEvent) => {
@@ -74,7 +68,7 @@ class Note {
     noteBar.classList.add("note-bar");
     const deleteButton: HTMLDivElement = document.createElement("div");
     deleteButton.classList.add("note-bar-delete");
-    deleteButton.addEventListener("click", this.removeNote.bind(this));
+    deleteButton.id = this.id;
     const deleteButtonIcon: HTMLImageElement = document.createElement('img');
     deleteButtonIcon.classList.add('note-bar-delete-icon')
     deleteButtonIcon.src = "images/cross-sign.png";
@@ -113,6 +107,7 @@ class Note {
     const saveButton = this.createActionButton('save', 'Save', () => {
       boardContainer.style.pointerEvents = 'auto';
       noteContent.innerHTML = tinymce.activeEditor.getContent();
+      this._content = noteContent.innerHTML;
       tinymce.activeEditor.focus();
     });
 
@@ -132,10 +127,8 @@ class Note {
 
   private createNoteContent(): HTMLDivElement {
     const noteContent = document.createElement('div');
+    noteContent.innerHTML = this.content;
     noteContent.classList.add("note-content");
-    noteContent.classList.add(this.id);
-    noteContent.id = this.id;
-    noteContent.addEventListener("change", this.textChangeHandler.bind(this));
     noteContent.addEventListener('click', () => {
       tinymce.init({
         selector: '.tinymce-placeholder',

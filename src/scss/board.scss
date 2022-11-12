@@ -99,6 +99,22 @@
     }
   }
 
+  .board-info {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: $cool-grey;
+    color: #fff;
+    font-size: 1.3em;
+
+    .info-value {
+      font-size: 2em;
+      color: $eggshell;
+    }
+  }
+
   .note {
     background-color: transparent;
     max-width: 90vw;
