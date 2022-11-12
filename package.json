@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "concurrently \"webpack --config webpack.config.js --mode=development\" \"live-server --watch=dist/ --open=dist/index.html -q --browser=firefox\""
+    "dev": "concurrently \"webpack --config webpack.config.js --mode=development\" \"live-server --watch=dist/ --open=dist/index.html -q --browser=firefox\"",
+    "build": "webpack --config webpack.config.js --mode=production"
   },
   "author": "Jakub Biela",
   "license": "ISC",
