@@ -23,6 +23,7 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
+    "tinymce": "^6.2.0",
     "uuid": "^9.0.0"
   }
 }

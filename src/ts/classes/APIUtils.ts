@@ -2,13 +2,19 @@ import Board from "../types/BoardType";
 import APIResponse from "../types/APIResponseType";
 
 class APIUtils {
-    public static async getBoard(name: string) {
-        const response: APIResponse = await fetch(`http://192.168.1.201:3001/api/v1/boards/${name}`) as unknown as APIResponse;
+    public static async createOrGetBoard(name: string) {
+        const response = await fetch(`http://localhost:3000/api/v1/boards/${name}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const transformedResponse: APIResponse = await response.json();
 
-        if (response.data) {
-            return response.data.board;
+        if (transformedResponse.data) {
+            return transformedResponse.data.board;
         } else {
-            throw new Error(response.message);
+            throw new Error(transformedResponse.message);
         }
     }
 
@@ -23,7 +29,6 @@ class APIUtils {
        } else {
            throw new Error(response.message);
        }
-
     }
 }
 

@@ -2,6 +2,11 @@ $bg-color: #d8d9cf;
 $bg-color-light: #ededed;
 $primary-color: #e26868;
 $secondary-color: #ff8787;
+$eggshell: hsla(52, 50%, 91%, 1);
+$forest-green-crayola: hsla(140, 33%, 46%, 1);
+$independence: hsla(234, 20%, 30%, 1);
+$cool-grey: hsla(228, 15%, 63%, 1);
+$brick-red: hsla(352, 60%, 55%, 1);
 $font-stack: "Source Sans Pro", sans-serif;
 $font-size: 14px;
 $transition-time: 0.5s;
@@ -19,6 +24,6 @@ html {
 
 body {
   min-height: 100%;
-  background-color: $bg-color;
+  background-color: $independence;
   font-size: $font-size;
 }

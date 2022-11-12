@@ -1,26 +1,18 @@
 import { v4 as uuidv4 } from "uuid";
+import tinymce, {Editor} from "tinymce";
 
 export type HTMLNoteElement = {
   container: HTMLDivElement,
   actionBar: HTMLDivElement,
-  title: HTMLTextAreaElement,
-  content: HTMLTextAreaElement
+  content: HTMLDivElement
 }
 
 class Note {
   readonly id: string;
-  private _title: string;
   private _content: string;
   private _isFavorite: boolean;
   private _HTMLNote: HTMLNoteElement;
-
-  public get title(): string {
-    return this._title;
-  }
-
-  public set title(title: string) {
-    this._title = title;
-  }
+  public editor: Editor;
 
   public get content(): string {
     return this._content;
@@ -42,19 +34,16 @@ class Note {
     return this._HTMLNote;
   }
 
-  public constructor() {
-    this.id = uuidv4();
-    this._title = "";
-    this._content = "";
-    this._isFavorite = false;
+  public constructor(id?: string, content?: string, isFavorite?: boolean) {
+    this.id = id ?? uuidv4();
+    this._content = content ?? "";
+    this._isFavorite = isFavorite ?? false;
   }
 
   private textChangeHandler(event: Event) {
     const { name, value } = event.target as HTMLTextAreaElement;
     if (name === "content") {
       this._content = value;
-    } else if (name === "title") {
-      this._title = value;
     }
   }
 
@@ -66,10 +55,10 @@ class Note {
     const { movementX, movementY } = event;
     const containerStyle: CSSStyleDeclaration = window.getComputedStyle(this._HTMLNote.container);
     const { left, top } = { left: parseFloat(containerStyle.left), top: parseFloat(containerStyle.top) };
-    const exceedsWidth = left + movementX > window.innerWidth - parseFloat(containerStyle.width) || left + movementX < 0;
-    const exceedsHeight = top + movementY > window.innerHeight - parseFloat(containerStyle.height) || top + movementY < 0;
-    this._HTMLNote.container.style.left = `${!exceedsWidth ? left + movementX : left}px`;
-    this._HTMLNote.container.style.top = `${!exceedsHeight ? top + movementY : top}px`;
+    // const exceedsWidth = left + movementX > window.innerWidth - parseFloat(containerStyle.width) || left + movementX < 0;
+    // const exceedsHeight = top + movementY > window.innerHeight - parseFloat(containerStyle.height) || top + movementY < 0;
+    this._HTMLNote.container.style.left = `${left + movementX}px`;
+    this._HTMLNote.container.style.top = `${top + movementY}px`;
   }
 
   private grabNote() {
@@ -80,46 +69,101 @@ class Note {
     window.removeEventListener("mousemove", this.dragNote);
   }
 
+  private createNoteBar(): HTMLDivElement {
+    const noteBar = document.createElement('div');
+    noteBar.classList.add("note-bar");
+    const deleteButton: HTMLDivElement = document.createElement("div");
+    deleteButton.classList.add("note-bar-delete");
+    deleteButton.addEventListener("click", this.removeNote.bind(this));
+    const deleteButtonIcon: HTMLImageElement = document.createElement('img');
+    deleteButtonIcon.classList.add('note-bar-delete-icon')
+    deleteButtonIcon.src = "images/cross-sign.png";
+    deleteButtonIcon.alt = "remove";
+    deleteButton.appendChild(deleteButtonIcon);
+    noteBar.appendChild(deleteButton);
+    noteBar.addEventListener("mousedown", this.grabNote.bind(this));
+    window.addEventListener("mouseup", this.dropNote.bind(this));
+    return noteBar;
+  }
+
+  private createActionButton(name: string, text: string, onClick: { (): void; (): void; (this: HTMLImageElement, ev: MouseEvent): any; }): HTMLButtonElement {
+    const button = document.createElement('button');
+    button.classList.add('tinymce-action-button');
+    button.classList.add(`tinymce-action-button-${name}`);
+    button.innerText = text;
+    button.addEventListener('click', onClick);
+    return button;
+  }
+
+  private prepareForTinyMCE(noteContent: HTMLDivElement) {
+    tinymce.activeEditor.setContent(noteContent.innerHTML);
+
+    const boardContainer: HTMLDivElement = document.querySelector('.stck-brd');
+    boardContainer.style.pointerEvents = 'none';
+
+    const actionButtons = document.createElement('div');
+    actionButtons.classList.add('tinymce-action-buttons');
+
+    const closeButton = this.createActionButton('close', 'Close', () => {
+      boardContainer.style.pointerEvents = 'auto';
+      tinymce.activeEditor.setContent('');
+      tinymce.activeEditor.destroy();
+    });
+
+    const saveButton = this.createActionButton('save', 'Save', () => {
+      boardContainer.style.pointerEvents = 'auto';
+      noteContent.innerHTML = tinymce.activeEditor.getContent();
+      tinymce.activeEditor.focus();
+    });
+
+    actionButtons.appendChild(closeButton);
+    actionButtons.appendChild(saveButton);
+
+    const actionButtonsContainer: HTMLDivElement = document.querySelector('.tox-statusbar__branding');
+    actionButtonsContainer.innerHTML = '';
+    actionButtonsContainer.appendChild(actionButtons);
+  }
+
+  private createNoteSeparator(): HTMLHRElement {
+    const noteSeparator = document.createElement('hr');
+    noteSeparator.classList.add('note-separator');
+    return noteSeparator;
+  }
+
+  private createNoteContent(): HTMLDivElement {
+    const noteContent = document.createElement('div');
+    noteContent.classList.add("note-content");
+    noteContent.classList.add(this.id);
+    noteContent.id = this.id;
+    noteContent.addEventListener("change", this.textChangeHandler.bind(this));
+    noteContent.addEventListener('click', () => {
+      tinymce.init({
+        selector: '.tinymce-placeholder',
+        custom_ui_selector: '.save-button'
+      }).then(() => {
+        this.prepareForTinyMCE(noteContent);
+      });
+    });
+    return noteContent;
+  }
+
   public createElement(): HTMLNoteElement {
     const newHTMLNote: HTMLDivElement = document.createElement("div");
     newHTMLNote.classList.add("note");
     
-    const { noteBar, noteTitle, noteSeparator, noteContent } = {
-      noteBar: document.createElement("div"),
-      noteTitle: document.createElement("textarea"),
-      noteSeparator: document.createElement("hr"),
-      noteContent: document.createElement("textarea")
+    const { noteBar, noteSeparator, noteContent } = {
+      noteBar: this.createNoteBar(),
+      noteSeparator: this.createNoteSeparator(),
+      noteContent: this.createNoteContent()
     }
 
-    noteBar.classList.add("note-bar");
-    const deleteButton: HTMLImageElement = document.createElement("img");
-    deleteButton.classList.add("note-bar-delete");
-    deleteButton.addEventListener("click", this.removeNote.bind(this));
-    deleteButton.src = "images/trash.png";
-    deleteButton.alt = "remove";
-    noteBar.appendChild(deleteButton);
-    noteBar.addEventListener("mousedown", this.grabNote.bind(this));
-    document.addEventListener("mouseup", this.dropNote.bind(this));
-
-    noteTitle.name = "title";
-    noteTitle.classList.add("note-title");
-    noteTitle.addEventListener("change", this.textChangeHandler.bind(this));
-    
-    noteSeparator.classList.add("note-separator");
-
-    noteContent.name = "content";
-    noteContent.classList.add("note-content");
-    noteContent.addEventListener("change", this.textChangeHandler.bind(this));
-
     newHTMLNote.appendChild(noteBar);
-    newHTMLNote.appendChild(noteTitle);
     newHTMLNote.appendChild(noteSeparator);
     newHTMLNote.appendChild(noteContent);
     
     this._HTMLNote = {
       container: newHTMLNote,
       actionBar: noteBar,
-      title: noteTitle,
       content: noteContent
     }
     
