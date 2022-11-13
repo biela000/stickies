@@ -35,7 +35,12 @@ class APIUtils {
                 return {
                     id: n.id,
                     content: n.content,
-                    isFavorite: n.isFavorite
+                    isFavorite: n.isFavorite,
+                    top: n.top,
+                    left: n.left,
+                    width: n.width,
+                    height: n.height,
+                    zIndex: n.zIndex
                 }
             })
         }
@@ -58,7 +63,7 @@ class APIUtils {
     }
 
     public static async createBoard(board: Board) {
-        const response: APIResponse = await fetch('http://localhost:3001/api/v1/boards', {
+        const response: APIResponse = await fetch('/api/v1/boards', {
             method: "POST",
             body: JSON.stringify(board)
         }) as unknown as APIResponse;

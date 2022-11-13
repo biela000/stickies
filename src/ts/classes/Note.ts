@@ -12,7 +12,11 @@ class Note {
   private _content: string;
   private _isFavorite: boolean;
   private _HTMLNote: HTMLNoteElement;
-  public editor: Editor;
+  private _left: string;
+  private _top: string;
+  public width: string;
+  public height: string;
+  public zIndex: number;
 
   public get content(): string {
     return this._content;
@@ -34,15 +38,26 @@ class Note {
     return this._HTMLNote;
   }
 
+  public get left() {
+    return this._left;
+  }
+
+  public set left(newLeft: string) {
+    this._left = newLeft;
+  }
+
+  public get top() {
+    return this._top;
+  }
+
+  public set top(newTop: string) {
+    this._top = newTop;
+  }
+
   public constructor(id?: string, content?: string, isFavorite?: boolean) {
     this.id = id ?? uuidv4();
     this._content = content ?? "";
     this._isFavorite = isFavorite ?? false;
-  }
-
-  private textChangeHandler(event: Event) {
-    this._content = (event.target as HTMLDivElement).innerText;
-    console.log(this._content);
   }
 
   private dragNote = (event: MouseEvent) => {
@@ -68,7 +83,7 @@ class Note {
     noteBar.classList.add("note-bar");
     const deleteButton: HTMLDivElement = document.createElement("div");
     deleteButton.classList.add("note-bar-delete");
-    deleteButton.id = this.id;
+    // deleteButton.id = this.id;
     const deleteButtonIcon: HTMLImageElement = document.createElement('img');
     deleteButtonIcon.classList.add('note-bar-delete-icon')
     deleteButtonIcon.src = "images/cross-sign.png";
@@ -153,6 +168,8 @@ class Note {
     newHTMLNote.appendChild(noteBar);
     newHTMLNote.appendChild(noteSeparator);
     newHTMLNote.appendChild(noteContent);
+
+    newHTMLNote.id = this.id;
     
     this._HTMLNote = {
       container: newHTMLNote,
