@@ -10,7 +10,7 @@ type updateData = {
 
 class APIUtils {
     public static async createOrGetBoard(name: string) {
-        const response = await fetch(`http://localhost:3001/api/v1/boards/${name}`, {
+        const response = await fetch(`/api/v1/boards/${name}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -40,7 +40,7 @@ class APIUtils {
             })
         }
 
-        const response = await fetch(`http://localhost:3001/api/v1/boards/${name}`, {
+        const response = await fetch(`/api/v1/boards/${name}`, {
             method: 'PATCH',
             body: JSON.stringify(preparedData),
             headers: {
