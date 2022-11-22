@@ -81,7 +81,7 @@
   width: 100%;
   min-height: 100%;
   position: relative;
-  overflow: hidden;
+  overflow-y: hidden;
 
   .n-note {
     width: fit-content;
@@ -187,6 +187,7 @@
       @include note-textarea(1rem, 0.3rem, 0.1rem);
       word-break: break-all;
       flex-grow: 1;
+      overflow-y: auto;
     }
   }
 }
